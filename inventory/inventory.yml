@@ -1,0 +1,13 @@
+[app]
+vm2
+vm3
+
+[database]
+vm1
+
+[web]
+vm1
+
+[database:vars]
+pg_version=14
+data_directory=/data/pg-db

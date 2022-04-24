@@ -1,0 +1,33 @@
+- name: Install Docker pre-reqs
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - libseccomp
+
+- name: Install EPEL
+  yum:
+    name: https://s3.amazonaws.com/ansible-ci-files/test/integration/targets/setup_epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    disable_gpg_check: true
+
+- name: Enable extras repository
+  command: yum-config-manager --enable REGION-rhel-server-extras rhel-7-server-rhui-extras-rpms
+
+- name: Set-up repository
+  yum_repository:
+    name: docker-ce
+    description: docker-ce
+    baseurl: https://download.docker.com/linux/centos/{{ ansible_facts.distribution_major_version }}/$basearch/stable
+    gpgcheck: true
+    gpgkey: https://download.docker.com/linux/centos/gpg
+
+- name: Update cache
+  command: yum -y makecache fast
+
+- name: Install docker
+  yum:
+    name: docker-ce
+    state: present

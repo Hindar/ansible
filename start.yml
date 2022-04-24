@@ -1,0 +1,12 @@
+---
+- hosts: app
+  become: yes
+  remote_user: evgeny
+  roles:
+    - install_docker
+
+- hosts: database
+  become: yes
+  remote_user: evgeny
+  roles:
+    - install_psql

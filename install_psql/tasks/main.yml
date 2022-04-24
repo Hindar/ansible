@@ -1,0 +1,31 @@
+---
+# tasks file for install_psql
+- name: Set up Postgres repo
+  shell: |
+    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  args:
+    warn: no
+
+- name: Install Postgres
+  package:
+    name:
+      - ca-certificates
+      - python3-pycurl
+      - python3-psycopg2
+      - postgresql-{{ pg_version }}
+    state: present
+    update_cache: yes
+  register: install_package
+
+- name: Create data directory
+  file:
+    path: "{{ data_directory }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0770
+
+- name: Set data directory
+  command: su - postgres -c "/usr/lib/postgresql/{{ pg_version }}/bin/initdb -D {{ data_directory }}"
+  
